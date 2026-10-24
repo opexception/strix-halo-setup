@@ -1,0 +1,18 @@
+services:
+  caddy:
+    image: ${CADDY_IMAGE:?configure CADDY_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      - litellm
+      - openwebui
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?configure API_DOMAIN}
+      CHAT_DOMAIN: ${CHAT_DOMAIN:?configure CHAT_DOMAIN}
+    volumes:
+      - ${CADDYFILE_PATH:-./config/caddy/Caddyfile.public}:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [backend]
+volumes:
+  caddy_data:
+  caddy_config:

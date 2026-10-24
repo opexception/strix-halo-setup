@@ -1,0 +1,5 @@
+services:
+  caddy:
+    ports:
+      - "${EDGE_BIND_IP:-0.0.0.0}:80:80"
+      - "${EDGE_BIND_IP:-0.0.0.0}:443:443"

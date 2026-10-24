@@ -1,0 +1,11 @@
+# LAN/VPN hostnames => Caddy internal CA. Clients must trust its root certificate.
+{$API_DOMAIN} {
+  tls internal
+  encode zstd gzip
+  reverse_proxy litellm:4000
+}
+{$CHAT_DOMAIN} {
+  tls internal
+  encode zstd gzip
+  reverse_proxy openwebui:8080
+}

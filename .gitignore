@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+*.local
+*.key
+*.pem
+*.crt
+*.log
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+backups/
+state/
+secrets/

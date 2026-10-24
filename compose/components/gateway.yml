@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:?configure POSTGRES_IMAGE}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_DB: litellm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?configure POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+  litellm:
+    image: ${LITELLM_IMAGE:?configure LITELLM_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD:?configure POSTGRES_PASSWORD}@postgres:5432/litellm
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?configure LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY:?configure LITELLM_SALT_KEY}
+      OLLAMA_PROVIDER_MODEL: ${OLLAMA_PROVIDER_MODEL:?configure OLLAMA_PROVIDER_MODEL}
+      LITELLM_MODEL_NAME: ${LITELLM_MODEL_NAME:-local-default}
+    volumes:
+      - ./config/litellm/config.yaml:/app/config.yaml:ro
+    networks: [backend]
+volumes:
+  postgres_data:

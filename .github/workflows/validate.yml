@@ -1,0 +1,20 @@
+name: Validate starter
+on:
+  push:
+  pull_request:
+jobs:
+  lint-and-config:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install validators
+        run: |
+          python3 -m pip install --break-system-packages 'PyYAML>=6,<7'
+          sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Syntax and unit checks
+        run: |
+          bash -n scripts/*.sh
+          shellcheck scripts/*.sh
+          python3 -m unittest discover -s tests -v
+      - name: Validate all Compose configurations and port boundaries
+        run: ./scripts/validate.sh

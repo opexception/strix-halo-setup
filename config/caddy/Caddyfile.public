@@ -1,0 +1,9 @@
+# Public DNS + ports 80/443 reachable => Caddy manages publicly trusted TLS.
+{$API_DOMAIN} {
+  encode zstd gzip
+  reverse_proxy litellm:4000
+}
+{$CHAT_DOMAIN} {
+  encode zstd gzip
+  reverse_proxy openwebui:8080
+}

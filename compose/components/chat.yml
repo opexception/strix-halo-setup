@@ -1,0 +1,22 @@
+services:
+  openwebui:
+    image: ${OPENWEBUI_IMAGE:?configure OPENWEBUI_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      litellm:
+        condition: service_started
+    environment:
+      ENABLE_OLLAMA_API: "false"
+      ENABLE_OPENAI_API: "true"
+      OPENAI_API_BASE_URL: http://litellm:4000/v1
+      OPENAI_API_KEY: ${OPENWEBUI_API_KEY:?create LiteLLM virtual key}
+      WEBUI_AUTH: "true"
+      ENABLE_SIGNUP: "false"
+      WEBUI_ADMIN_EMAIL: ${WEBUI_ADMIN_EMAIL:?configure WEBUI_ADMIN_EMAIL}
+      WEBUI_ADMIN_PASSWORD: ${WEBUI_ADMIN_PASSWORD:?configure WEBUI_ADMIN_PASSWORD}
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:?configure WEBUI_SECRET_KEY}
+    volumes:
+      - webui_data:/app/backend/data
+    networks: [backend]
+volumes:
+  webui_data:
